@@ -7,12 +7,7 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-              - sfdx-version-41-local
-              - virtual-env
-      - run:
-          name: Decrypt Server Key
-          command: |
-              openssl aes-256-cbc -k $KEY -in assets/server.key.enc -out assets/server.key -d
+              - sfdx-simple-salesforce
       - run:
           name: Install Salesforce DX and simple_salesforce
           command: |
@@ -30,22 +25,16 @@ jobs:
                 pip install simple_salesforce
               fi
       - save_cache:
-          key: sfdx-version-41-local
+          key: sfdx-simple-salesforce
           paths: 
               - node_modules
-      - save_cache:
-          key: virtual-env
-          paths:
               - venv
       - run: 
           name: Create Scratch Org
           command: |
+              openssl aes-256-cbc -k $KEY -in assets/server.key.enc -out assets/server.key -d
               node_modules/sfdx-cli/bin/run force:auth:jwt:grant --clientid $CONSUMERKEY --jwtkeyfile assets/server.key --username $USERNAME --setdefaultdevhubusername -a DevHub
               node_modules/sfdx-cli/bin/run force:org:create -v DevHub -s -f config/project-scratch-def.json -a scratch
-      - run:
-          name: Remove Server Key
-          when: always
-          command: |
               rm assets/server.key
       - run:
           name: Perform Metadata Deploy
