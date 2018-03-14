@@ -50,10 +50,11 @@ jobs:
       - run:
           name: Perform Metadata Deploy
           command: |
-              node_modules/sfdx-cli/bin/run force:mdapi:deploy -d md-src
+              node_modules/sfdx-cli/bin/run force:mdapi:deploy -d md-src -w 5
       - run:
           name: Integration Test - Username and Password
           command: |
+              . venv/bin/activate
               node_modules/sfdx-cli/bin/run force:user:password:generate > /dev/null
               export PASSWORD=$(node_modules/sfdx-cli/bin/run force:user:display --json | python -c "import json; import sys; print(json.load(sys.stdin)['result']['password'])")
               export SF_USERNAME=$(node_modules/sfdx-cli/bin/run force:user:display --json | python -c "import json; import sys; print(json.load(sys.stdin)['result']['username'])")
@@ -61,6 +62,7 @@ jobs:
       - run: 
           name: Integration Test - Access Token
           command: |
+              . venv/bin/activate
               node_modules/sfdx-cli/bin/run force:user:password:generate
               export ACCESS_TOKEN=$(node_modules/sfdx-cli/bin/run force:user:display --json | python -c "import json; import sys; print(json.load(sys.stdin)['result']['accessToken'])")
               export INSTANCE_URL=$(node_modules/sfdx-cli/bin/run force:user:display --json | python -c "import json; import sys; print(json.load(sys.stdin)['result']['instanceUrl'])")
