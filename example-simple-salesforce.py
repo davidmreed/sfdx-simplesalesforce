@@ -14,9 +14,9 @@ args = a.parse_args()
 
 connection = None
 
-if all([args.hasattr('access_token'), args.hasattr('instance_url')]):
+if all([hasattr(args, 'access_token'), hasattr(args, 'instance_url')]):
     connection = simple_salesforce.Salesforce(instance_url=args.instance_url, session_id=args.access_token)
-elif all([args.hasattr('username'), args.hasattr('password'), args.hasattr('token')]):
+elif all([hasattr(args, 'username'), hasattr(args, 'password'), hasattr(args, 'token')]):
     connection = simple_salesforce.Salesforce(username=args.user, 
                                               password=args.password, 
                                               security_token=args.token, 
