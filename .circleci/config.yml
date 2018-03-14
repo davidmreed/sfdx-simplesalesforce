@@ -1,0 +1,68 @@
+version: 2
+jobs:
+  test-sfdx:
+    docker:
+      - image: circleci/python:3.6.4-node
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+              - sfdx-version-41-local
+              - virtual-env
+      - run:
+          name: Decrypt Server Key
+          command: |
+              openssl aes-256-cbc -k $KEY -in assets/server.key.enc -out assets/server.key -d
+      - run:
+          name: Install Salesforce DX and simple_salesforce
+          command: |
+              if [ ! -d node_modules/sfdx-cli ]; then
+                export SFDX_AUTOUPDATE_DISABLE=true
+                export SFDX_USE_GENERIC_UNIX_KEYCHAIN=true
+                export SFDX_DOMAIN_RETRY=300
+                npm install sfdx-cli
+                node_modules/sfdx-cli/bin/run --version
+                node_modules/sfdx-cli/bin/run plugins --core
+              fi
+              if [! -d venv ]; then
+                python -m venv venv
+                . venv/bin/activate
+                pip install simple_salesforce
+              fi
+      - save_cache:
+          key: sfdx-version-41-local
+          paths: 
+              - node_modules
+      - save_cache:
+          key: virtual-env
+          paths:
+              - venv
+      - run: 
+          name: Create Scratch Org
+          command: |
+              node_modules/sfdx-cli/bin/run force:auth:jwt:grant --clientid $CONSUMERKEY --jwtkeyfile assets/server.key --username $USERNAME --setdefaultdevhubusername -a DevHub
+              node_modules/sfdx-cli/bin/run force:org:create -v DevHub -s -f config/project-scratch-def.json -a scratch
+      - run:
+          name: Remove Server Key
+          when: always
+          command: |
+              rm assets/server.key
+      - run:
+          name: Integration Test - Username and Password
+          command: |
+              node_modules/sfdx-cli/bin/run force:user:password:generate
+              export PASSWORD=$(node_modules/sfdx-cli/bin/run force:user:display --json | python -c "import json; import sys; print(json.load(sys.stdin)['result']['password']")
+              export USERNAME=$(node_modules/sfdx-cli/bin/run force:user:display --json | python -c "import json; import sys; print(json.load(sys.stdin)['result']['username']")
+              python example-simple-salesforce.py -p "$PASSWORD" -u "$USERNAME" -t "" -s
+      - run: 
+          name: Integration Test - Access Token
+          command: |
+              node_modules/sfdx-cli/bin/run force:user:password:generate
+              export ACCESS_TOKEN=$(node_modules/sfdx-cli/bin/run force:user:display --json | python -c "import json; import sys; print(json.load(sys.stdin)['result']['accessToken']")
+              export INSTANCE_URL=$(node_modules/sfdx-cli/bin/run force:user:display --json | python -c "import json; import sys; print(json.load(sys.stdin)['result']['instanceUrl']")
+              python example-simple-salesforce.py -a "$ACCESS_TOKEN" -i "$INSTANCE_URL"
+      - run: 
+          name: Clean Up
+          when: always
+          command: |
+              node_modules/sfdx-cli/bin/run force:org:delete -u scratch -p
