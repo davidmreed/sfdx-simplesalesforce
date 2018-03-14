@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  test-sfdx:
+  build:
     docker:
       - image: circleci/python:3.6.4-node
     steps:
@@ -47,6 +47,10 @@ jobs:
           when: always
           command: |
               rm assets/server.key
+      - run:
+          name: Perform Metadata Deploy
+          command: |
+              node_modules/sfdx-cli/bin/run force:mdapi:deploy -d md-src
       - run:
           name: Integration Test - Username and Password
           command: |
