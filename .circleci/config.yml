@@ -51,15 +51,15 @@ jobs:
           name: Integration Test - Username and Password
           command: |
               node_modules/sfdx-cli/bin/run force:user:password:generate
-              export PASSWORD=$(node_modules/sfdx-cli/bin/run force:user:display --json | python -c "import json; import sys; print(json.load(sys.stdin)['result']['password']")
-              export USERNAME=$(node_modules/sfdx-cli/bin/run force:user:display --json | python -c "import json; import sys; print(json.load(sys.stdin)['result']['username']")
+              export PASSWORD=$(node_modules/sfdx-cli/bin/run force:user:display --json | python -c "import json; import sys; print(json.load(sys.stdin)['result']['password'])")
+              export USERNAME=$(node_modules/sfdx-cli/bin/run force:user:display --json | python -c "import json; import sys; print(json.load(sys.stdin)['result']['username'])")
               python example-simple-salesforce.py -p "$PASSWORD" -u "$USERNAME" -t "" -s
       - run: 
           name: Integration Test - Access Token
           command: |
               node_modules/sfdx-cli/bin/run force:user:password:generate
-              export ACCESS_TOKEN=$(node_modules/sfdx-cli/bin/run force:user:display --json | python -c "import json; import sys; print(json.load(sys.stdin)['result']['accessToken']")
-              export INSTANCE_URL=$(node_modules/sfdx-cli/bin/run force:user:display --json | python -c "import json; import sys; print(json.load(sys.stdin)['result']['instanceUrl']")
+              export ACCESS_TOKEN=$(node_modules/sfdx-cli/bin/run force:user:display --json | python -c "import json; import sys; print(json.load(sys.stdin)['result']['accessToken'])")
+              export INSTANCE_URL=$(node_modules/sfdx-cli/bin/run force:user:display --json | python -c "import json; import sys; print(json.load(sys.stdin)['result']['instanceUrl'])")
               python example-simple-salesforce.py -a "$ACCESS_TOKEN" -i "$INSTANCE_URL"
       - run: 
           name: Clean Up
