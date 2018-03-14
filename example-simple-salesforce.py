@@ -14,9 +14,9 @@ args = a.parse_args()
 
 connection = None
 
-if all([hasattr(args, 'access_token'), hasattr(args, 'instance_url')]):
+if args.access_token is not None and args.instance_url is not None:
     connection = simple_salesforce.Salesforce(instance_url=args.instance_url, session_id=args.access_token)
-elif all([hasattr(args, 'username'), hasattr(args, 'password'), hasattr(args, 'token')]):
+elif args.user is not None and args.password is not None and args.token is not None:
     connection = simple_salesforce.Salesforce(username=args.user, 
                                               password=args.password, 
                                               security_token=args.token, 
