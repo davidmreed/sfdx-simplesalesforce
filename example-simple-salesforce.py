@@ -3,11 +3,11 @@ import simple_salesforce
 
 a = argparse.ArgumentParser()
 
-a.add_argument('-u', '--username', dest='user')
-a.add_argument('-p', '--password', dest='password')
-a.add_argument('-t', '--security-token', dest='token')
-a.add_argument('-a', '--access-token', dest='access_token')
-a.add_argument('-i', '--instance-url', dest='instance_url')
+a.add_argument('-u', '--username', dest='user', default=None)
+a.add_argument('-p', '--password', dest='password', default=None)
+a.add_argument('-t', '--security-token', dest='token', default=None)
+a.add_argument('-a', '--access-token', dest='access_token', default=None)
+a.add_argument('-i', '--instance-url', dest='instance_url', default=None)
 a.add_argument('-s', '--sandbox', dest='sandbox', action="store_true")
 
 args = a.parse_args()
