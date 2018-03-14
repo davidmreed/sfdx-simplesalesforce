@@ -52,8 +52,8 @@ jobs:
           command: |
               node_modules/sfdx-cli/bin/run force:user:password:generate
               export PASSWORD=$(node_modules/sfdx-cli/bin/run force:user:display --json | python -c "import json; import sys; print(json.load(sys.stdin)['result']['password'])")
-              export USERNAME=$(node_modules/sfdx-cli/bin/run force:user:display --json | python -c "import json; import sys; print(json.load(sys.stdin)['result']['username'])")
-              python example-simple-salesforce.py -p "$PASSWORD" -u "$USERNAME" -t "" -s
+              export SF_USERNAME=$(node_modules/sfdx-cli/bin/run force:user:display --json | python -c "import json; import sys; print(json.load(sys.stdin)['result']['username'])")
+              python example-simple-salesforce.py -p "$PASSWORD" -u "$SF_USERNAME" -t "" -s
       - run: 
           name: Integration Test - Access Token
           command: |
