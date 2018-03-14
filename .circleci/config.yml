@@ -24,7 +24,7 @@ jobs:
                 node_modules/sfdx-cli/bin/run --version
                 node_modules/sfdx-cli/bin/run plugins --core
               fi
-              if [! -d venv ]; then
+              if [ ! -d venv ]; then
                 python -m venv venv
                 . venv/bin/activate
                 pip install simple_salesforce
@@ -54,7 +54,7 @@ jobs:
       - run:
           name: Integration Test - Username and Password
           command: |
-              node_modules/sfdx-cli/bin/run force:user:password:generate
+              node_modules/sfdx-cli/bin/run force:user:password:generate > /dev/null
               export PASSWORD=$(node_modules/sfdx-cli/bin/run force:user:display --json | python -c "import json; import sys; print(json.load(sys.stdin)['result']['password'])")
               export SF_USERNAME=$(node_modules/sfdx-cli/bin/run force:user:display --json | python -c "import json; import sys; print(json.load(sys.stdin)['result']['username'])")
               python example-simple-salesforce.py -p "$PASSWORD" -u "$SF_USERNAME" -t "" -s
